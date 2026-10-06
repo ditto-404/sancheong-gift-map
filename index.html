@@ -214,8 +214,12 @@ h1 .scribble svg { position: absolute; left: -12px; top: -9px; width: calc(100% 
 .pop .actions .k i svg { width: 10px; height: 10px; }
 .pop .actions .d { border: 1px solid #bdbcb7; color: var(--ink) !important; }
 .pop .actions .d:hover { border-color: var(--ink); }
-.spot-label { background: var(--night); color: #fff; border: 0; border-radius: 999px; padding: 5px 11px; font: 600 12px var(--body); box-shadow: 0 4px 12px rgba(0,0,0,.18); }
-.spot-label::before { display: none; }
+.spot { position: relative; width: 0; height: 0; }
+.spot-dot { position: absolute; left: -8px; top: -8px; width: 16px; height: 16px; border-radius: 50%; background: var(--ink); border: 3px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,.35); }
+.spot-pulse { position: absolute; left: -22px; top: -22px; width: 44px; height: 44px; border-radius: 50%; background: var(--lime); border: 2px solid var(--ink); opacity: .7; animation: spotPulse 1.8s ease-out infinite; }
+@keyframes spotPulse { from { transform: scale(.4); opacity: .8; } to { transform: scale(1.6); opacity: 0; } }
+.spot-name { position: absolute; left: 16px; top: -16px; white-space: nowrap; background: var(--night); color: #fff; border-radius: 999px; padding: 7px 14px 7px 12px; font: 650 14px var(--body); box-shadow: 0 6px 18px rgba(0,0,0,.22); display: inline-flex; align-items: center; gap: 7px; }
+.spot-name::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--lime); }
 .leaflet-control-attribution { font-size: 10px; background: rgba(255,255,255,.75) !important; border-radius: 8px 0 0 0; }
 
 .toast { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 900; background: var(--night); color: #fff; padding: 11px 18px; border-radius: 999px; font-size: 13px; box-shadow: 0 10px 30px rgba(0,0,0,.2); white-space: nowrap; }
@@ -246,7 +250,7 @@ h1 .scribble svg { position: absolute; left: -12px; top: -9px; width: calc(100% 
   .nav .pill-dark span { display: none; }
   .nav .pill-dark { width: 40px; padding: 0; justify-content: center; }
 }
-@media (prefers-reduced-motion: reduce) { .pill-dark.busy svg { animation: none; } .switch .track, .switch .track::after { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .spot-pulse { animation: none; opacity: 0; } .pill-dark.busy svg { animation: none; } .switch .track, .switch .track::after { transition: none; } }
 </style>
 </head>
 <body>
@@ -386,12 +390,17 @@ h1 .scribble svg { position: absolute; left: -12px; top: -9px; width: calc(100% 
   });
   map.addLayer(cluster);
 
-  // Highlighted area: 500 m around 덕산문화의집.
+  // Highlighted area: 500 m around 덕산문화의집. Drawn in its own pane above the
+  // merchant pins (markerPane 600) and below popups (700); it ignores clicks so pins stay usable.
   var spot = [35.276086, 127.844861];
-  L.circle(spot, { radius: 500, color: "#111111", weight: 1.5, dashArray: "4 4", fillColor: "#e6fb2d", fillOpacity: 0.35, interactive: false }).addTo(map);
-  L.circleMarker(spot, { radius: 6, color: "#ffffff", weight: 2.5, fillColor: "#111111", fillOpacity: 1, interactive: false })
-    .bindTooltip("덕산문화의집", { permanent: true, direction: "right", offset: [10, 0], className: "spot-label" })
-    .addTo(map);
+  map.createPane("spotPane");
+  map.getPane("spotPane").style.zIndex = 650;
+  map.getPane("spotPane").style.pointerEvents = "none";
+  L.circle(spot, { pane: "spotPane", radius: 500, color: "#111111", weight: 2, dashArray: "5 5", fillColor: "#e6fb2d", fillOpacity: 0.45, interactive: false }).addTo(map);
+  L.marker(spot, {
+    pane: "spotPane", interactive: false, keyboard: false,
+    icon: L.divIcon({ className: "", html: '<div class="spot"><span class="spot-pulse"></span><span class="spot-dot"></span><span class="spot-name">덕산문화의집</span></div>', iconSize: [0, 0], iconAnchor: [0, 0] })
+  }).addTo(map);
 
   function pinIcon(m, on) {
     return L.divIcon({ className: "", html: '<div class="pin' + (m.prec === 2 ? " approx" : "") + (on ? " on" : "") + '"></div>', iconSize: [14, 14], iconAnchor: [7, 7], popupAnchor: [0, -8] });
@@ -584,7 +593,8 @@ h1 .scribble svg { position: absolute; left: -12px; top: -9px; width: calc(100% 
   });
 
   $("total").textContent = fmt(DATA.count);
-  apply(true);
+  apply(false);
+  map.setView(spot, 15);
 })();
 </script>
 </body>
