@@ -390,13 +390,13 @@ h1 .scribble svg { position: absolute; left: -12px; top: -9px; width: calc(100% 
   });
   map.addLayer(cluster);
 
-  // Highlighted area: 500 m around 덕산문화의집. Drawn in its own pane above the
-  // merchant pins (markerPane 600) and below popups (700); it ignores clicks so pins stay usable.
+  // Highlighted area: 500 m around 덕산문화의집. The circle sits in the default overlay pane
+  // under the merchant pins; only the center dot and name label use a pane above the pins.
   var spot = [35.276086, 127.844861];
   map.createPane("spotPane");
   map.getPane("spotPane").style.zIndex = 650;
   map.getPane("spotPane").style.pointerEvents = "none";
-  L.circle(spot, { pane: "spotPane", radius: 500, color: "#111111", weight: 2, dashArray: "5 5", fillColor: "#e6fb2d", fillOpacity: 0.45, interactive: false }).addTo(map);
+  L.circle(spot, { radius: 500, color: "#111111", weight: 2, dashArray: "5 5", fillColor: "#e6fb2d", fillOpacity: 0.45, interactive: false }).addTo(map);
   L.marker(spot, {
     pane: "spotPane", interactive: false, keyboard: false,
     icon: L.divIcon({ className: "", html: '<div class="spot"><span class="spot-pulse"></span><span class="spot-dot"></span><span class="spot-name">덕산문화의집</span></div>', iconSize: [0, 0], iconAnchor: [0, 0] })
