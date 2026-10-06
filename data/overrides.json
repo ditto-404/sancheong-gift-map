@@ -1,0 +1,10 @@
+{
+  "_note": "Branches registered in the spreadsheet under the head office address (산청읍 웅석봉로 3). Each entry moves the merchant to the store Kakao Map lists for that branch; addr is the store's road address. Keyed by merchant number (구분).",
+  "360": {"name_check": "차황점", "lat": 35.464792, "lng": 127.930093, "pid": "12264232", "tel": "", "addr": "경상남도 산청군 차황면 친환경로 3609"},
+  "361": {"name_check": "호암점", "lat": 35.28611, "lng": 127.913531, "pid": "12264333", "tel": "055-972-5992", "addr": "경상남도 산청군 단성면 호암로 243"},
+  "364": {"name_check": "금서점", "lat": 35.417207, "lng": 127.863736, "pid": "12264478", "tel": "055-970-2560", "addr": "경상남도 산청군 금서면 친환경로 2540"},
+  "365": {"name_check": "문대점", "lat": 35.334185, "lng": 128.000152, "pid": "12264386", "tel": "055-973-4807", "addr": "경상남도 산청군 신안면 지리산대로 3931"},
+  "366": {"name_check": "삼장점", "lat": 35.297907, "lng": 127.832607, "pid": "12264285", "tel": "055-972-9606", "addr": "경상남도 산청군 삼장면 덕산대포로 256"},
+  "367": {"name_check": "생비량점", "lat": 35.34479, "lng": 128.046026, "pid": "12264234", "tel": "055-972-6005", "addr": "경상남도 산청군 생비량면 비량로 46"},
+  "368": {"name_check": "서부점", "lat": 35.261948, "lng": 127.900055, "pid": "12264385", "tel": "055-972-5005", "addr": "경상남도 산청군 단성면 옥단로2074번길 32"}
+}

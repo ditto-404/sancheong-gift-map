@@ -16,7 +16,8 @@
 ## 주요 기능
 
 - **지도 + 목록 동시 탐색**: 가맹점이 많은 곳은 숫자 클러스터로 묶고, 확대하면 개별 핀이 나타납니다. 선택한 가게는 라임색 핀으로 강조됩니다.
-- **검색과 필터**: 가게 이름, 주소, 업종으로 검색하고, 11개 업종 버튼과 지도 위 **영수증 카드**(읍면별 가맹점 수)로 범위를 좁힙니다. 영수증의 읍면 줄을 누르면 그 지역만 보이고, 숫자는 현재 조건에 맞춰 바로 갱신됩니다.
+- **검색과 필터**: 가게 이름, 주소, 업종으로 검색하고 11개 업종 버튼으로 범위를 좁힙니다. 버튼의 숫자는 현재 조건에 맞춰 바로 갱신됩니다.
+- **프랜차이즈 영수증**: 지도 오른쪽 아래 **영수증 카드**에 하나로마트, CU, GS25, 다이소 등 10개 브랜드와 가맹점 수가 나옵니다. 브랜드 줄을 누르면 지도에 그 브랜드 매장만 남고 각 핀 옆에 매장 이름이 표시됩니다. 한 번 더 누르면 전체로 돌아갑니다.
 - **카카오맵 연결**: 카카오에서 같은 가게를 찾은 1,027곳은 **카카오맵 장소 페이지**(영업시간, 리뷰, 사진)로, 나머지는 해당 좌표의 카카오맵 지도로 연결합니다. 길찾기 버튼도 함께 제공합니다.
 - **내 위치 기준 정렬**: 위치 권한을 허용하면 목록을 가까운 순으로 정렬하고 거리를 표시합니다.
 - **지도 화면 안만**: 스위치를 켜고 지도를 움직이면 현재 화면 안의 가맹점만 목록에 남깁니다.
@@ -68,9 +69,10 @@ flowchart LR
 
 ## 사용 예시
 
-- **"원지에서 점심 먹을 곳"**: 영수증 카드에서 `신안면`, 업종에서 `음식점`을 고른 뒤 지도를 원지 일대로 확대하고 `지도 화면 안만` 스위치를 켭니다.
+- **"원지에서 점심 먹을 곳"**: 업종에서 `음식점`을 고른 뒤 지도를 원지 일대로 확대하고 `지도 화면 안만` 스위치를 켭니다.
+- **"가까운 하나로마트"**: 영수증 카드에서 `하나로마트`를 누르면 산청군 하나로마트 지점이 이름과 함께 지도에 표시됩니다.
 - **"곶감 살 수 있는 농가"**: 검색창에 `곶감`을 입력합니다. 시천면, 삼장면 농원이 목록과 지도에 함께 표시됩니다.
-- **"지금 근처 주유소"**: 오른쪽 아래 위치 버튼을 누르고 업종에서 `자동차·주유`를 고르면 가까운 순으로 정렬됩니다.
+- **"지금 근처 주유소"**: 상단의 `내 주변 가맹점` 버튼을 누르고 업종에서 `자동차·주유`를 고르면 가까운 순으로 정렬됩니다.
 - **"동의보감촌 근처 카페 영업시간"**: `동의보감` 검색 후 카페 항목의 `카카오맵` 버튼을 누르면 카카오맵 장소 페이지에서 영업시간과 리뷰를 확인할 수 있습니다.
 
 ## 데이터 갱신
@@ -117,6 +119,7 @@ sancheong-gift-map/
 ├── data/
 │   ├── merchants.js           # 페이지가 읽는 최종 데이터 (빌드 산출물)
 │   ├── geocode.json           # 가맹점 번호별 좌표, 카카오 장소 ID, 전화번호 캐시
+│   ├── overrides.json         # 엑셀 주소가 실제 매장과 다른 가맹점의 위치 보정
 │   └── source/
 │       ├── sancheong-gift-merchants-2026-06.xlsx  # 원본 가맹점 목록
 │       └── queries.json       # 지오코딩용 정규화 주소 (빌드 산출물)
@@ -133,6 +136,7 @@ sancheong-gift-map/
 | `og-image.png` | 카카오톡, 슬랙 등에 링크를 공유할 때 뜨는 미리보기 이미지입니다. 페이지 `<head>`의 Open Graph 태그가 사이트 이름(산청사랑상품권 사용처)과 함께 이 이미지를 가리킵니다. |
 | `data/merchants.js` | `window.MERCHANTS`에 가맹점 배열을 담습니다. JSON 대신 스크립트 파일로 둔 이유는 `index.html`을 로컬에서 더블클릭으로 열어도 `fetch` 제한 없이 동작하게 하기 위해서입니다. |
 | `data/geocode.json` | `[번호, 위도, 경도, 장소ID, 카테고리 인덱스, 전화, 정밀도]` 행 배열입니다. 정밀도는 `0` 건물, `1` 장소 검색, `2` 도로 단위 근사입니다. API 결과를 캐시해 두기 때문에 갱신 시 새 가맹점만 다시 요청합니다. |
+| `data/overrides.json` | 가맹점 번호별로 좌표, 장소 ID, 전화, 표시 주소를 덮어씁니다. 각 항목의 `name_check`가 엑셀 상호에 들어 있지 않으면 빌드가 멈추므로, 엑셀 번호가 바뀌어 엉뚱한 가맹점이 옮겨지는 일을 막습니다. |
 | `scripts/build_data.py` | 엑셀을 읽어 산청군 주소와 역외 주소(온라인 가맹점 등)를 나누고, 카카오 카테고리 또는 상호 키워드로 11개 업종에 배정합니다. 카카오에서 장소를 찾지 못한 가맹점도 이름 키워드로 분류해 "기타"가 과도하게 커지지 않게 합니다. |
 | `scripts/geocode.mjs` | 주소 검색, 실패 시 도로 단위 재검색, 반경 2km 상호 검색 순으로 좌표와 장소 정보를 얻습니다. 키는 환경변수로만 받아 저장소에 남지 않습니다. |
 
@@ -143,6 +147,7 @@ sancheong-gift-map/
 - **근사 위치는 숨기지 않습니다.** 건물 번지를 찾지 못한 4건은 도로 위치로 표시하고, 지도에서는 점선 테두리 핀과 팝업 안내 문구로 구분합니다. 끝내 위치를 찾지 못한 1건(삼장면 평촌유평로20번길)은 목록에만 남깁니다.
 - **장소 매칭은 보수적으로 합니다.** 상호가 비슷해도 600m 넘게 떨어져 있으면 주소가 일치할 때만 같은 가게로 봅니다. 잘못된 장소 페이지로 연결하는 것보다 좌표 지도 링크로 연결하는 편이 낫기 때문입니다.
 - **역외 주소 가맹점 6곳**(땡겨요, 제로페이, e경남몰 등 온라인·본사 주소)은 지도에 찍지 않고 목록 맨 아래 별도 항목으로 보여줍니다.
+- **본점 주소로 등록된 지점은 따로 보정합니다.** 엑셀에는 하나로마트 9개 지점이 모두 산청군농협 본점 주소(산청읍 웅석봉로 3)로 올라 있어, 처음에는 한 점에 9개가 겹쳐 있었습니다. 카카오맵에서 실제 매장이 확인된 7개 지점은 `data/overrides.json`으로 위치를 옮겼고, 매장을 특정하지 못한 오성지소와 오전점은 엑셀 주소 그대로 둡니다.
 
 ## 데이터 출처와 주의
 
@@ -171,7 +176,8 @@ A static web page that puts all 1,730 merchants accepting the **Sancheong Sarang
 ### Features
 
 - **Map and list together**: dense areas collapse into numbered clusters; zooming in reveals individual pins, and the selected shop is highlighted with a lime pin.
-- **Search and filters**: search by shop name, address or category, then narrow down with 11 business-type buttons and the **receipt card** on the map (merchant counts per township). Tapping a township line on the receipt shows only that area, and all counts update to match the current filters.
+- **Search and filters**: search by shop name, address or category, then narrow down with 11 business-type buttons. Button counts update to match the current filters.
+- **Franchise receipt**: the **receipt card** at the bottom right of the map lists 10 brands such as Hanaro Mart, CU, GS25 and Daiso with their merchant counts. Tapping a brand line leaves only that brand on the map and shows each store name next to its pin. Tapping it again returns to everything.
 - **Kakao Map links**: the 1,027 merchants that were matched to a Kakao place open the **Kakao Map place page** (hours, reviews, photos); the rest open Kakao Map at their coordinates. A directions button sits next to it.
 - **Sort by distance**: after allowing location access, the list is sorted nearest first and shows the distance.
 - **Only what is on screen**: turn on the switch and pan the map; the list keeps only the merchants inside the current view.
@@ -223,9 +229,10 @@ To check it locally, download the repository and open `index.html` in a browser.
 
 ### Usage examples
 
-- **"Somewhere for lunch in Wonji"**: pick `신안면` (Sinan-myeon) on the receipt card and `음식점` (restaurants), zoom into Wonji and turn on the `지도 화면 안만` (only what is on screen) switch.
+- **"Somewhere for lunch in Wonji"**: pick `음식점` (restaurants), zoom into Wonji and turn on the `지도 화면 안만` (only what is on screen) switch.
+- **"Nearest Hanaro Mart"**: tap `하나로마트` on the receipt card; every Hanaro Mart branch in the county appears on the map with its name.
 - **"Farms selling dried persimmons"**: type `곶감` in the search box. Farms in Sicheon-myeon and Samjang-myeon show up in the list and on the map.
-- **"Nearest gas station right now"**: tap the location button at the bottom right and pick `자동차·주유` (cars and fuel); the list is sorted nearest first.
+- **"Nearest gas station right now"**: tap the `내 주변 가맹점` (merchants near me) button at the top and pick `자동차·주유` (cars and fuel); the list is sorted nearest first.
 - **"Opening hours of a cafe near Donguibogam Village"**: search `동의보감`, then tap `카카오맵` on a cafe to see hours and reviews on its Kakao Map place page.
 
 ### Updating the data
@@ -272,6 +279,7 @@ sancheong-gift-map/
 ├── data/
 │   ├── merchants.js           # Final data read by the page (build output)
 │   ├── geocode.json           # Coordinates, Kakao place IDs and phones per merchant number
+│   ├── overrides.json         # Location fixes for merchants whose listed address is not the store
 │   └── source/
 │       ├── sancheong-gift-merchants-2026-06.xlsx  # Original merchant list
 │       └── queries.json       # Normalized addresses for geocoding (build output)
@@ -288,6 +296,7 @@ sancheong-gift-map/
 | `og-image.png` | Preview image shown when the link is shared in KakaoTalk, Slack and so on. Open Graph tags in the page `<head>` point to it along with the site name (산청사랑상품권 사용처). |
 | `data/merchants.js` | Puts the merchant array on `window.MERCHANTS`. It is a script rather than JSON so that `index.html` also works when opened straight from disk, without `fetch` restrictions. |
 | `data/geocode.json` | Rows of `[number, lat, lng, place ID, category index, phone, precision]`. Precision is `0` building, `1` place search, `2` approximate road level. Caching API results means updates only request new merchants. |
+| `data/overrides.json` | Overrides coordinates, place ID, phone and displayed address per merchant number. The build stops if an entry's `name_check` is not part of the spreadsheet name, so a renumbered spreadsheet cannot move the wrong merchant. |
 | `scripts/build_data.py` | Reads the spreadsheet, separates Sancheong addresses from outside ones (online merchants and so on), and assigns each merchant to one of 11 types from its Kakao category or name keywords. Merchants Kakao could not match are still classified by name so the "other" group does not balloon. |
 | `scripts/geocode.mjs` | Gets coordinates and place info by address search, a road-level retry on failure, then a shop name search within 2 km. The key is read only from an environment variable and never lands in the repository. |
 
@@ -298,6 +307,7 @@ sancheong-gift-map/
 - **Approximate positions are not hidden.** The 4 merchants whose building number could not be found are shown at the road position, marked with a dashed pin border and a note in the popup. The one address that could not be found at all (Samjang-myeon, Pyeongchon-yupyeong-ro 20beon-gil) stays in the list only.
 - **Place matching is conservative.** A similar name more than 600 m away counts only when the address also matches. Linking to the map at the right coordinates beats linking to the wrong place page.
 - **The 6 merchants with addresses outside the county** (Ddangyo, Zero Pay, e-Gyeongnam Mall and other online or head office addresses) are not pinned; they are listed in a separate section at the end of the list.
+- **Branches listed under the head office address are corrected separately.** The spreadsheet lists all 9 Hanaro Mart branches at the Sancheong-gun Nonghyup head office address (Sancheong-eup, Ungseokbong-ro 3), so at first all 9 sat on one point. The 7 branches whose stores could be confirmed on Kakao Map are moved with `data/overrides.json`; Oseong and Ojeon, whose stores could not be pinned down, keep the spreadsheet address.
 
 ### Data sources and caveats
 

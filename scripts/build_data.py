@@ -126,6 +126,10 @@ def main():
     cats = geo["cats"]
     by_no = {r[0]: r for r in geo["rows"]}
 
+    # Manual corrections (e.g. branches listed under the head office address).
+    ov_path = ROOT / "data/overrides.json"
+    overrides = json.loads(ov_path.read_text(encoding="utf-8")) if ov_path.exists() else {}
+
     merchants, outside = [], []
     for r in load_rows():
         m = re.match(r"(?:경상남도|경남)\s+산청군\s+(\S+[읍면])", r["addr"])
@@ -133,6 +137,13 @@ def main():
             outside.append({"no": r["no"], "name": r["name"], "addr": r["addr"]})
             continue
         g = by_no.get(r["no"])
+        ov = overrides.get(str(r["no"]))
+        if ov:
+            if ov.get("name_check") and ov["name_check"] not in r["name"]:
+                raise SystemExit(f"override {r['no']} expects '{ov['name_check']}' but row is '{r['name']}'")
+            g = [r["no"], ov["lat"], ov["lng"], ov["pid"], g[4] if g else -1, ov["tel"], 1]
+            r["addr"] = ov["addr"]
+            m = re.match(r"(?:경상남도|경남)\s+산청군\s+(\S+[읍면])", r["addr"])
         kakao_cat = cats[g[4]] if g and g[4] >= 0 else ""
         merchants.append(
             {

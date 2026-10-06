@@ -33,7 +33,7 @@
 <style>
 /* Layout: white page, one large stone-grey rounded stage. Inside it, a left column
    (headline, search, type pills, list card) and a map card with a dark receipt overlay
-   that doubles as the township filter. Single light look by design. */
+   that doubles as the franchise filter. Single light look by design. */
 :root {
   --page: #ffffff;
   --stone: #ecebe8;
@@ -160,9 +160,9 @@ h1 .scribble svg { position: absolute; left: -12px; top: -9px; width: calc(100% 
 .round:hover { background: var(--ink); color: #fff; }
 .round svg { width: 17px; height: 17px; }
 
-/* Receipt: township filter */
+/* Receipt: franchise filter */
 .receipt {
-  position: absolute; left: 16px; bottom: 16px; z-index: 460; width: 236px;
+  position: absolute; right: 16px; bottom: 16px; z-index: 460; width: 236px;
   background: var(--night); border-radius: 18px; padding: 10px; color: #fff;
   box-shadow: 0 10px 30px rgba(0,0,0,.18);
 }
@@ -217,7 +217,9 @@ h1 .scribble svg { position: absolute; left: -12px; top: -9px; width: calc(100% 
 .spot { position: relative; width: 0; height: 0; }
 .spot-name { position: absolute; left: -16px; top: 0; transform: translateY(-50%); white-space: nowrap; background: var(--night); color: #fff; border-radius: 999px; padding: 7px 14px 7px 12px; font: 650 14px var(--body); box-shadow: 0 6px 18px rgba(0,0,0,.22); display: inline-flex; align-items: center; gap: 7px; }
 .spot-name::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--lime); }
-.leaflet-control-attribution { font-size: 10px; background: rgba(255,255,255,.75) !important; border-radius: 8px 0 0 0; }
+.leaflet-control-attribution { font-size: 10px; background: rgba(255,255,255,.75) !important; border-radius: 0 8px 0 0; }
+.pin-label { background: #fff; color: var(--ink); border: 1px solid var(--ink); border-radius: 999px; padding: 3px 9px; font: 650 12px var(--body); box-shadow: 0 2px 8px rgba(0,0,0,.12); white-space: nowrap; }
+.pin-label::before { display: none; }
 
 .toast { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 900; background: var(--night); color: #fff; padding: 11px 18px; border-radius: 999px; font-size: 13px; box-shadow: 0 10px 30px rgba(0,0,0,.2); white-space: nowrap; }
 
@@ -239,7 +241,7 @@ h1 .scribble svg { position: absolute; left: -12px; top: -9px; width: calc(100% 
   h1 { font-size: 30px; }
   .pills { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin: 0 -18px; padding: 0 18px; }
   .pills::-webkit-scrollbar { display: none; }
-  .receipt { width: 210px; left: 10px; bottom: 10px; }
+  .receipt { width: 210px; right: 10px; bottom: 10px; }
   .hand-note { display: none; }
   .foot { padding: 0 20px 24px; }
 }
@@ -312,13 +314,13 @@ h1 .scribble svg { position: absolute; left: -12px; top: -9px; width: calc(100% 
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
       </button>
     </div>
-    <aside class="receipt" id="receipt" aria-label="읍면별 가맹점">
+    <aside class="receipt" id="receipt" aria-label="프랜차이즈 가맹점">
       <div class="receipt-paper">
         <div class="receipt-top"><b>RECEIPT</b><button class="receipt-toggle" id="receiptToggle" type="button" aria-expanded="true">접기</button></div>
-        <ul class="rows" id="emdRows"></ul>
-        <div class="receipt-total"><span>합계</span><span class="v" id="emdTotal">0</span></div>
+        <ul class="rows" id="brandRows"></ul>
+        <div class="receipt-total"><span>합계</span><span class="v" id="brandTotal">0</span></div>
       </div>
-      <div class="receipt-foot">읍면을 누르면 그 지역만 봅니다</div>
+      <div class="receipt-foot">브랜드를 누르면 그 가게만 지도에 표시돼요</div>
     </aside>
   </section>
 </main>
@@ -344,17 +346,24 @@ h1 .scribble svg { position: absolute; left: -12px; top: -9px; width: calc(100% 
     ["car", "자동차·주유"], ["leisure", "레저·문화"], ["etc", "생활서비스"]
   ];
   var G = {}; GROUPS.forEach(function (g) { G[g[0]] = g[1]; });
-  var EMDS = ["산청읍", "차황면", "오부면", "생초면", "금서면", "삼장면", "시천면", "단성면", "신안면", "생비량면", "신등면"];
+  var BRANDS = [
+    ["hanaro", "하나로마트", /하나로마트/], ["cu", "CU", /^씨유(?!펫)|^CU/i], ["gs25", "GS25", /GS25/i],
+    ["daiso", "다이소", /다이소/], ["seven", "세븐일레븐", /세븐일레븐/], ["emart24", "이마트24", /이마트24/],
+    ["gscaltex", "GS칼텍스", /GS칼텍스/], ["paris", "파리바게뜨", /파리바게뜨/], ["ediya", "이디야커피", /이디야/],
+    ["gamachi", "가마치통닭", /가마치/]
+  ];
   var ARROW = '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 9l6-6M4 3h5v5"/></svg>';
 
   var all = DATA.merchants.map(function (m, i) {
     m.idx = i;
     m.short = m.addr.replace(/^(경상남도|경남)\s+산청군\s+/, "");
+    m.brand = "";
+    BRANDS.some(function (b) { if (b[2].test(m.name)) { m.brand = b[0]; return true; } return false; });
     m.hay = (m.name + " " + m.addr + " " + m.cat + " " + G[m.grp]).toLowerCase().replace(/\s+/g, "");
     return m;
   });
 
-  var state = { q: "", emd: "", grp: "", inView: false, me: null };
+  var state = { q: "", brand: "", grp: "", inView: false, me: null };
   var PAGE = 60, shown = 0, current = [];
   var $ = function (id) { return document.getElementById(id); };
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
@@ -370,11 +379,11 @@ h1 .scribble svg { position: absolute; left: -12px; top: -9px; width: calc(100% 
   $("zin").onclick = function () { map.zoomIn(); };
   $("zout").onclick = function () { map.zoomOut(); };
 
-  // Keep popups clear of the receipt card (bottom-left) while it is open.
+  // Keep popups clear of the receipt card (bottom-right) while it is open.
   var PAD_TL = [20, 20], PAD_BR = [64, 20];
   function syncPad() {
     var r = $("receipt"), open = !r.classList.contains("closed");
-    PAD_TL[0] = open && window.innerWidth > 980 ? r.offsetWidth + 32 : 20;
+    PAD_BR[0] = open && window.innerWidth > 980 ? r.offsetWidth + 32 : 64;
   }
 
   var cluster = L.markerClusterGroup({
@@ -385,6 +394,8 @@ h1 .scribble svg { position: absolute; left: -12px; top: -9px; width: calc(100% 
     }
   });
   map.addLayer(cluster);
+  var labelLayer = L.layerGroup().addTo(map), labeled = [];
+  map.attributionControl.setPosition("bottomleft");
 
   // Highlighted area: 500 m around 덕산문화의집. The circle sits in the default overlay pane
   // under the merchant pins; only the center dot and name label use a pane above the pins.
@@ -440,15 +451,15 @@ h1 .scribble svg { position: absolute; left: -12px; top: -9px; width: calc(100% 
   // ---------- Filters ----------
   function matches(m, skip) {
     if (state.q && m.hay.indexOf(state.q) < 0) return false;
-    if (skip !== "emd" && state.emd && m.emd !== state.emd) return false;
+    if (skip !== "brand" && state.brand && m.brand !== state.brand) return false;
     if (skip !== "grp" && state.grp && m.grp !== state.grp) return false;
     return true;
   }
 
   function renderFilters() {
-    var ec = {}, gc = {}, et = 0, gt = 0;
+    var bc = {}, bt = 0, gc = {}, gt = 0;
     all.forEach(function (m) {
-      if (matches(m, "emd")) { ec[m.emd] = (ec[m.emd] || 0) + 1; et++; }
+      if (m.brand && matches(m, "brand")) { bc[m.brand] = (bc[m.brand] || 0) + 1; bt++; }
       if (matches(m, "grp")) { gc[m.grp] = (gc[m.grp] || 0) + 1; gt++; }
     });
     var box = $("grpPills"), sl = box.scrollLeft;
@@ -457,10 +468,10 @@ h1 .scribble svg { position: absolute; left: -12px; top: -9px; width: calc(100% 
         return '<button type="button" class="pill" data-v="' + g[0] + '" aria-pressed="' + (state.grp === g[0]) + '">' + g[1] + ' <span class="n">' + fmt(gc[g[0]] || 0) + "</span></button>";
       }).join("");
     box.scrollLeft = sl;
-    $("emdRows").innerHTML = EMDS.map(function (e) {
-      return '<li><button type="button" data-v="' + e + '" aria-pressed="' + (state.emd === e) + '"><span class="k">' + e + '</span><span class="v">' + fmt(ec[e] || 0) + "</span></button></li>";
+    $("brandRows").innerHTML = BRANDS.map(function (b) {
+      return '<li><button type="button" data-v="' + b[0] + '" aria-pressed="' + (state.brand === b[0]) + '"><span class="k">' + b[1] + '</span><span class="v">' + fmt(bc[b[0]] || 0) + "</span></button></li>";
     }).join("");
-    $("emdTotal").textContent = fmt(state.emd ? (ec[state.emd] || 0) : et);
+    $("brandTotal").textContent = fmt(state.brand ? (bc[state.brand] || 0) : bt);
   }
 
   function distKm(a, b) {
@@ -471,7 +482,10 @@ h1 .scribble svg { position: absolute; left: -12px; top: -9px; width: calc(100% 
 
   function fitTo(list) {
     var pts = list.filter(function (m) { return m.lat != null; }).map(function (m) { return [m.lat, m.lng]; });
-    if (pts.length) map.fitBounds(pts, { padding: [48, 48], maxZoom: 16 });
+    if (!pts.length) return;
+    // In franchise view, leave room on the right for name labels and the receipt card.
+    var right = state.brand ? Math.max(PAD_BR[0], 64) + 150 : 48;
+    map.fitBounds(pts, { paddingTopLeft: [48, 48], paddingBottomRight: [right, 48], maxZoom: 16 });
   }
   $("zall").onclick = function () { fitTo(all); };
 
@@ -484,11 +498,22 @@ h1 .scribble svg { position: absolute; left: -12px; top: -9px; width: calc(100% 
       current.forEach(function (m) { m.d = m.lat != null ? distKm(state.me, [m.lat, m.lng]) : 1e9; });
       current.sort(function (x, y) { return x.d - y.d; });
     }
-    var key = state.q + "|" + state.emd + "|" + state.grp;
+    var key = state.q + "|" + state.brand + "|" + state.grp;
     if (key !== lastKey) {
       lastKey = key;
       cluster.clearLayers();
-      cluster.addLayers(base.filter(function (m) { return m.marker; }).map(function (m) { return m.marker; }));
+      labeled.forEach(function (m) { m.marker.unbindTooltip(); });
+      labelLayer.clearLayers(); labeled = [];
+      var withPin = base.filter(function (m) { return m.marker; });
+      if (state.brand) {
+        // Franchise view: few places, so show every pin with its name instead of clusters.
+        withPin.forEach(function (m) {
+          m.marker.bindTooltip(m.name.replace(/산청군농협\s*/, "").replace(/\s+/g, " "), { permanent: true, direction: "right", offset: [8, 0], className: "pin-label", interactive: false });
+          labelLayer.addLayer(m.marker); labeled.push(m);
+        });
+      } else {
+        cluster.addLayers(withPin.map(function (m) { return m.marker; }));
+      }
       if (fit && base.length) fitTo(base);
     }
     $("count").textContent = fmt(current.length);
@@ -519,7 +544,7 @@ h1 .scribble svg { position: absolute; left: -12px; top: -9px; width: calc(100% 
       btn.textContent = "더 보기 · " + fmt(current.length - shown) + "곳";
       btn.onclick = function () { renderList(false); };
       list.appendChild(btn);
-    } else if (!state.q && !state.emd && !state.grp && !state.inView && DATA.outside.length) {
+    } else if (!state.q && !state.brand && !state.grp && !state.inView && DATA.outside.length) {
       list.insertAdjacentHTML("beforeend", '<details class="outside"><summary>온라인·산청군 외 주소 ' + DATA.outside.length + "곳</summary><ul>" +
         DATA.outside.map(function (o) { return "<li>" + esc(o.name) + "<span>" + esc(o.addr) + "</span></li>"; }).join("") + "</ul></details>");
     }
@@ -528,10 +553,8 @@ h1 .scribble svg { position: absolute; left: -12px; top: -9px; width: calc(100% 
   function focusMerchant(m) {
     if (!m.marker) { toast("이 가맹점은 지도 위치를 찾지 못했어요"); return; }
     if (window.innerWidth <= 980) $("map-card").scrollIntoView({ behavior: "smooth", block: "center" });
-    cluster.zoomToShowLayer(m.marker, function () {
-      map.setView([m.lat, m.lng], Math.max(map.getZoom(), 16));
-      m.marker.openPopup();
-    });
+    function show() { map.setView([m.lat, m.lng], Math.max(map.getZoom(), 16)); m.marker.openPopup(); }
+    if (labelLayer.hasLayer(m.marker)) show(); else cluster.zoomToShowLayer(m.marker, show);
   }
 
   // ---------- Events ----------
@@ -541,9 +564,9 @@ h1 .scribble svg { position: absolute; left: -12px; top: -9px; width: calc(100% 
   $("q").addEventListener("keydown", function (e) { if (e.key === "Enter") { clearTimeout(qTimer); setQuery(e.target.value); } });
   $("qGo").addEventListener("click", function () { setQuery($("q").value); $("q").focus(); });
   $("grpPills").addEventListener("click", function (e) { var b = e.target.closest(".pill"); if (b) { state.grp = b.dataset.v; apply(false); } });
-  $("emdRows").addEventListener("click", function (e) {
+  $("brandRows").addEventListener("click", function (e) {
     var b = e.target.closest("button"); if (!b) return;
-    state.emd = state.emd === b.dataset.v ? "" : b.dataset.v; apply(true);
+    state.brand = state.brand === b.dataset.v ? "" : b.dataset.v; apply(true);
   });
   $("receiptToggle").addEventListener("click", function () {
     var r = $("receipt"), closed = r.classList.toggle("closed");
