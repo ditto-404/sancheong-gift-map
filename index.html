@@ -197,7 +197,7 @@ h1 .scribble svg { position: absolute; left: -12px; top: -9px; width: calc(100% 
 /* Popup */
 .leaflet-container { font-family: var(--body); }
 .leaflet-popup-content-wrapper { border-radius: 20px; box-shadow: 0 14px 40px rgba(0,0,0,.16); padding: 0; }
-.leaflet-popup-content { margin: 0; padding: 18px 18px 16px; font-size: 13.5px; line-height: 1.5; min-width: 230px; }
+.leaflet-popup-content { margin: 0; padding: 18px 18px 16px; font-size: 13.5px; line-height: 1.5; width: 268px !important; max-width: calc(100vw - 80px); }
 .leaflet-container a.leaflet-popup-close-button { top: 10px; right: 10px; width: 26px; height: 26px; border-radius: 50%; color: var(--ink-3); font: 18px/24px var(--display); }
 .leaflet-container a.leaflet-popup-close-button:hover { background: var(--stone); color: var(--ink); }
 .pop .cat { display: inline-flex; height: 24px; align-items: center; padding: 0 10px; border-radius: 999px; border: 1px solid var(--line); font-size: 11.5px; color: var(--ink-2); }
@@ -207,8 +207,8 @@ h1 .scribble svg { position: absolute; left: -12px; top: -9px; width: calc(100% 
 .pop .tel a { color: var(--ink-2); text-decoration: none; border-bottom: 1px solid var(--line); }
 .pop .note { margin-top: 10px; font-family: var(--hand); font-size: 19px; line-height: 1.1; color: var(--ink-2); }
 .pop .actions { display: flex; gap: 6px; margin-top: 14px; }
-.pop .actions a { flex: 1; display: inline-flex; justify-content: center; align-items: center; gap: 6px; height: 40px; border-radius: 999px; font-weight: 650; font-size: 13px; text-decoration: none; }
-.pop .actions .k { background: var(--night); color: #fff !important; }
+.pop .actions a { flex: 1; min-width: 0; white-space: nowrap; padding: 0 12px; display: inline-flex; justify-content: center; align-items: center; gap: 6px; height: 40px; border-radius: 999px; font-weight: 650; font-size: 13px; text-decoration: none; }
+.pop .actions .k { flex: 1.4; background: var(--night); color: #fff !important; }
 .pop .actions .k:hover { background: #000; }
 .pop .actions .k i { width: 18px; height: 18px; border-radius: 50%; background: var(--lime); display: grid; place-items: center; }
 .pop .actions .k i svg { width: 10px; height: 10px; }
@@ -375,7 +375,7 @@ h1 .scribble svg { position: absolute; left: -12px; top: -9px; width: calc(100% 
   $("zout").onclick = function () { map.zoomOut(); };
 
   // Keep popups clear of the receipt card (bottom-left) while it is open.
-  var PAD_TL = [20, 20], PAD_BR = [20, 20];
+  var PAD_TL = [20, 20], PAD_BR = [64, 20];
   function syncPad() {
     var r = $("receipt"), open = !r.classList.contains("closed");
     PAD_TL[0] = open && window.innerWidth > 980 ? r.offsetWidth + 32 : 20;
@@ -396,7 +396,7 @@ h1 .scribble svg { position: absolute; left: -12px; top: -9px; width: calc(100% 
   map.createPane("spotPane");
   map.getPane("spotPane").style.zIndex = 650;
   map.getPane("spotPane").style.pointerEvents = "none";
-  L.circle(spot, { radius: 500, color: "#111111", weight: 2, dashArray: "5 5", fillColor: "#e6fb2d", fillOpacity: 0.45, interactive: false }).addTo(map);
+  L.circle(spot, { radius: 500, color: "#111111", opacity: 0.55, weight: 1.5, dashArray: "5 5", fillColor: "#e6fb2d", fillOpacity: 0.18, interactive: false }).addTo(map);
   L.marker(spot, {
     pane: "spotPane", interactive: false, keyboard: false,
     icon: L.divIcon({ className: "", html: '<div class="spot"><span class="spot-pulse"></span><span class="spot-dot"></span><span class="spot-name">덕산문화의집</span></div>', iconSize: [0, 0], iconAnchor: [0, 0] })
