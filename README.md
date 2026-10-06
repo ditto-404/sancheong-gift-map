@@ -112,6 +112,7 @@ flowchart LR
 ```text
 sancheong-gift-map/
 ├── index.html                 # 지도 페이지 (HTML, CSS, JS 한 파일)
+├── og-image.png               # 링크 공유 미리보기 이미지 (1200x630)
 ├── data/
 │   ├── merchants.js           # 페이지가 읽는 최종 데이터 (빌드 산출물)
 │   ├── geocode.json           # 가맹점 번호별 좌표, 카카오 장소 ID, 전화번호 캐시
@@ -128,6 +129,7 @@ sancheong-gift-map/
 | 파일 | 역할 |
 |---|---|
 | `index.html` | Leaflet 지도, 클러스터, 검색과 필터, 목록, 모바일 시트를 모두 담습니다. 빌드 도구 없이 GitHub Pages에 그대로 올라가도록 라이브러리는 CDN에서 불러옵니다. |
+| `og-image.png` | 카카오톡, 슬랙 등에 링크를 공유할 때 뜨는 미리보기 이미지입니다. 페이지 `<head>`의 Open Graph 태그가 사이트 이름(산청사랑상품권 사용처)과 함께 이 이미지를 가리킵니다. |
 | `data/merchants.js` | `window.MERCHANTS`에 가맹점 배열을 담습니다. JSON 대신 스크립트 파일로 둔 이유는 `index.html`을 로컬에서 더블클릭으로 열어도 `fetch` 제한 없이 동작하게 하기 위해서입니다. |
 | `data/geocode.json` | `[번호, 위도, 경도, 장소ID, 카테고리 인덱스, 전화, 정밀도]` 행 배열입니다. 정밀도는 `0` 건물, `1` 장소 검색, `2` 도로 단위 근사입니다. API 결과를 캐시해 두기 때문에 갱신 시 새 가맹점만 다시 요청합니다. |
 | `scripts/build_data.py` | 엑셀을 읽어 산청군 주소와 역외 주소(온라인 가맹점 등)를 나누고, 카카오 카테고리 또는 상호 키워드로 11개 업종에 배정합니다. 카카오에서 장소를 찾지 못한 가맹점도 이름 키워드로 분류해 "기타"가 과도하게 커지지 않게 합니다. |
@@ -264,6 +266,7 @@ When a new merchant spreadsheet is published, update it in this order.
 ```text
 sancheong-gift-map/
 ├── index.html                 # Map page (HTML, CSS and JS in one file)
+├── og-image.png               # Link preview image (1200x630)
 ├── data/
 │   ├── merchants.js           # Final data read by the page (build output)
 │   ├── geocode.json           # Coordinates, Kakao place IDs and phones per merchant number
@@ -280,6 +283,7 @@ sancheong-gift-map/
 | File | Role |
 |---|---|
 | `index.html` | Holds the Leaflet map, clusters, search and filters, list and phone bottom sheet. Libraries load from CDNs so it can go to GitHub Pages as is, with no build tool. |
+| `og-image.png` | Preview image shown when the link is shared in KakaoTalk, Slack and so on. Open Graph tags in the page `<head>` point to it along with the site name (산청사랑상품권 사용처). |
 | `data/merchants.js` | Puts the merchant array on `window.MERCHANTS`. It is a script rather than JSON so that `index.html` also works when opened straight from disk, without `fetch` restrictions. |
 | `data/geocode.json` | Rows of `[number, lat, lng, place ID, category index, phone, precision]`. Precision is `0` building, `1` place search, `2` approximate road level. Caching API results means updates only request new merchants. |
 | `scripts/build_data.py` | Reads the spreadsheet, separates Sancheong addresses from outside ones (online merchants and so on), and assigns each merchant to one of 11 types from its Kakao category or name keywords. Merchants Kakao could not match are still classified by name so the "other" group does not balloon. |
