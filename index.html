@@ -214,6 +214,8 @@ h1 .scribble svg { position: absolute; left: -12px; top: -9px; width: calc(100% 
 .pop .actions .k i svg { width: 10px; height: 10px; }
 .pop .actions .d { border: 1px solid #bdbcb7; color: var(--ink) !important; }
 .pop .actions .d:hover { border-color: var(--ink); }
+.spot-label { background: var(--night); color: #fff; border: 0; border-radius: 999px; padding: 5px 11px; font: 600 12px var(--body); box-shadow: 0 4px 12px rgba(0,0,0,.18); }
+.spot-label::before { display: none; }
 .leaflet-control-attribution { font-size: 10px; background: rgba(255,255,255,.75) !important; border-radius: 8px 0 0 0; }
 
 .toast { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 900; background: var(--night); color: #fff; padding: 11px 18px; border-radius: 999px; font-size: 13px; box-shadow: 0 10px 30px rgba(0,0,0,.2); white-space: nowrap; }
@@ -383,6 +385,13 @@ h1 .scribble svg { position: absolute; left: -12px; top: -9px; width: calc(100% 
     }
   });
   map.addLayer(cluster);
+
+  // Highlighted area: 500 m around 덕산문화의집.
+  var spot = [35.276086, 127.844861];
+  L.circle(spot, { radius: 500, color: "#111111", weight: 1.5, dashArray: "4 4", fillColor: "#e6fb2d", fillOpacity: 0.35, interactive: false }).addTo(map);
+  L.circleMarker(spot, { radius: 6, color: "#ffffff", weight: 2.5, fillColor: "#111111", fillOpacity: 1, interactive: false })
+    .bindTooltip("덕산문화의집", { permanent: true, direction: "right", offset: [10, 0], className: "spot-label" })
+    .addTo(map);
 
   function pinIcon(m, on) {
     return L.divIcon({ className: "", html: '<div class="pin' + (m.prec === 2 ? " approx" : "") + (on ? " on" : "") + '"></div>', iconSize: [14, 14], iconAnchor: [7, 7], popupAnchor: [0, -8] });
