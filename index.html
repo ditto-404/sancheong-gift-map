@@ -396,7 +396,7 @@ h1 .scribble svg { position: absolute; left: -12px; top: -9px; width: calc(100% 
   map.createPane("spotPane");
   map.getPane("spotPane").style.zIndex = 650;
   map.getPane("spotPane").style.pointerEvents = "none";
-  L.circle(spot, { radius: 500, color: "#111111", opacity: 0.55, weight: 1.5, dashArray: "5 5", fillColor: "#e6fb2d", fillOpacity: 0.18, interactive: false }).addTo(map);
+  L.circle(spot, { radius: 500, color: "#111111", opacity: 0.55, weight: 1.5, dashArray: "5 5", fillColor: "#e6fb2d", fillOpacity: 0.3, interactive: false }).addTo(map);
   L.marker(spot, {
     pane: "spotPane", interactive: false, keyboard: false,
     icon: L.divIcon({ className: "", html: '<div class="spot"><span class="spot-pulse"></span><span class="spot-dot"></span><span class="spot-name">덕산문화의집</span></div>', iconSize: [0, 0], iconAnchor: [0, 0] })
