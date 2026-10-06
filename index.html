@@ -215,11 +215,13 @@ h1 .scribble svg { position: absolute; left: -12px; top: -9px; width: calc(100% 
 .pop .actions .d { border: 1px solid #bdbcb7; color: var(--ink) !important; }
 .pop .actions .d:hover { border-color: var(--ink); }
 .spot { position: relative; width: 0; height: 0; }
-.spot-name { position: absolute; left: -16px; top: 0; transform: translateY(-50%); white-space: nowrap; background: var(--night); color: #fff; border-radius: 999px; padding: 7px 14px 7px 12px; font: 650 14px var(--body); box-shadow: 0 6px 18px rgba(0,0,0,.22); display: inline-flex; align-items: center; gap: 7px; }
+.spot-name { position: absolute; left: -16px; top: 0; transform: translateY(-50%); white-space: nowrap; background: rgba(45,45,45,.72); color: #fff; border-radius: 999px; padding: 7px 14px 7px 12px; font: 650 14px var(--body); box-shadow: 0 6px 18px rgba(0,0,0,.14); display: inline-flex; align-items: center; gap: 7px; }
 .spot-name::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--lime); }
 .leaflet-control-attribution { font-size: 10px; background: rgba(255,255,255,.75) !important; border-radius: 0 8px 0 0; }
 .pin-label { background: #fff; color: var(--ink); border: 1px solid var(--ink); border-radius: 999px; padding: 3px 9px; font: 650 12px var(--body); box-shadow: 0 2px 8px rgba(0,0,0,.12); white-space: nowrap; }
 .pin-label::before { display: none; }
+.pin-label.leaflet-interactive { cursor: pointer; }
+.pin-label.leaflet-interactive:hover { background: var(--lime); }
 
 .toast { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 900; background: var(--night); color: #fff; padding: 11px 18px; border-radius: 999px; font-size: 13px; box-shadow: 0 10px 30px rgba(0,0,0,.2); white-space: nowrap; }
 
@@ -508,8 +510,11 @@ h1 .scribble svg { position: absolute; left: -12px; top: -9px; width: calc(100% 
       if (state.brand) {
         // Franchise view: few places, so show every pin with its name instead of clusters.
         withPin.forEach(function (m) {
-          m.marker.bindTooltip(m.name.replace(/산청군농협\s*/, "").replace(/\s+/g, " "), { permanent: true, direction: "right", offset: [8, 0], className: "pin-label", interactive: false });
+          m.marker.bindTooltip(m.name.replace(/산청군농협\s*/, "").replace(/\s+/g, " "), { permanent: true, direction: "right", offset: [8, 0], className: "pin-label", interactive: true });
           labelLayer.addLayer(m.marker); labeled.push(m);
+          // The name label opens the same popup as the pin.
+          var tipEl = m.marker.getTooltip().getElement();
+          if (tipEl) L.DomEvent.on(tipEl, "click", function (e) { L.DomEvent.stop(e); m.marker.openPopup(); });
         });
       } else {
         cluster.addLayers(withPin.map(function (m) { return m.marker; }));
