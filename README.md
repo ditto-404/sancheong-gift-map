@@ -15,12 +15,13 @@
 
 ## 주요 기능
 
-- **지도 + 목록 동시 탐색**: 가맹점이 많은 곳은 숫자 클러스터로 묶고, 확대하면 업종 색으로 구분된 핀이 나타납니다.
-- **검색과 필터**: 가게 이름, 주소, 업종으로 검색하고, 11개 읍면과 11개 업종 칩으로 범위를 좁힙니다. 칩의 숫자는 현재 조건에서의 개수로 바로 갱신됩니다.
+- **지도 + 목록 동시 탐색**: 가맹점이 많은 곳은 숫자 클러스터로 묶고, 확대하면 개별 핀이 나타납니다. 선택한 가게는 라임색 핀으로 강조됩니다.
+- **검색과 필터**: 가게 이름, 주소, 업종으로 검색하고, 11개 업종 버튼과 지도 위 **영수증 카드**(읍면별 가맹점 수)로 범위를 좁힙니다. 영수증의 읍면 줄을 누르면 그 지역만 보이고, 숫자는 현재 조건에 맞춰 바로 갱신됩니다.
 - **카카오맵 연결**: 카카오에서 같은 가게를 찾은 1,027곳은 **카카오맵 장소 페이지**(영업시간, 리뷰, 사진)로, 나머지는 해당 좌표의 카카오맵 지도로 연결합니다. 길찾기 버튼도 함께 제공합니다.
 - **내 위치 기준 정렬**: 위치 권한을 허용하면 목록을 가까운 순으로 정렬하고 거리를 표시합니다.
-- **지도에 보이는 곳만**: 지도를 움직이면 현재 화면 안의 가맹점만 목록에 남깁니다.
-- **모바일 대응**: 휴대폰에서는 목록이 아래에서 올라오는 시트로 바뀝니다. 다크 모드에서는 어두운 지도 타일로 전환됩니다.
+- **지도 화면 안만**: 스위치를 켜고 지도를 움직이면 현재 화면 안의 가맹점만 목록에 남깁니다.
+- **모바일 대응**: 휴대폰에서는 소개, 검색, 지도, 업종, 목록 순서로 세로로 쌓이고 영수증 카드는 접힌 상태로 시작합니다.
+- **링크 공유 미리보기**: 브라우저 탭과 카카오톡 등 공유 미리보기에 "산청사랑상품권 사용처 지도"라는 이름과 미리보기 이미지가 표시됩니다.
 
 ## 동작 원리
 
@@ -67,7 +68,7 @@ flowchart LR
 
 ## 사용 예시
 
-- **"원지에서 점심 먹을 곳"**: 읍면에서 `신안면`, 업종에서 `음식점`을 고른 뒤 지도를 원지 일대로 확대하고 `지도에 보이는 곳만`을 켭니다.
+- **"원지에서 점심 먹을 곳"**: 영수증 카드에서 `신안면`, 업종에서 `음식점`을 고른 뒤 지도를 원지 일대로 확대하고 `지도 화면 안만` 스위치를 켭니다.
 - **"곶감 살 수 있는 농가"**: 검색창에 `곶감`을 입력합니다. 시천면, 삼장면 농원이 목록과 지도에 함께 표시됩니다.
 - **"지금 근처 주유소"**: 오른쪽 아래 위치 버튼을 누르고 업종에서 `자동차·주유`를 고르면 가까운 순으로 정렬됩니다.
 - **"동의보감촌 근처 카페 영업시간"**: `동의보감` 검색 후 카페 항목의 `카카오맵` 버튼을 누르면 카카오맵 장소 페이지에서 영업시간과 리뷰를 확인할 수 있습니다.
@@ -128,7 +129,7 @@ sancheong-gift-map/
 
 | 파일 | 역할 |
 |---|---|
-| `index.html` | Leaflet 지도, 클러스터, 검색과 필터, 목록, 모바일 시트를 모두 담습니다. 빌드 도구 없이 GitHub Pages에 그대로 올라가도록 라이브러리는 CDN에서 불러옵니다. |
+| `index.html` | Leaflet 지도, 클러스터, 검색과 필터, 영수증 카드, 목록, 모바일 레이아웃을 모두 담습니다. 지도 타일은 키가 필요 없는 OSM 표준 타일을 CSS로 흑백 처리해 페이지 톤에 맞춥니다(처음 쓴 CARTO 타일은 배포 후 API 키를 요구해서 교체했습니다). 빌드 도구 없이 GitHub Pages에 그대로 올라가도록 라이브러리는 CDN에서 불러옵니다. |
 | `og-image.png` | 카카오톡, 슬랙 등에 링크를 공유할 때 뜨는 미리보기 이미지입니다. 페이지 `<head>`의 Open Graph 태그가 사이트 이름(산청사랑상품권 사용처)과 함께 이 이미지를 가리킵니다. |
 | `data/merchants.js` | `window.MERCHANTS`에 가맹점 배열을 담습니다. JSON 대신 스크립트 파일로 둔 이유는 `index.html`을 로컬에서 더블클릭으로 열어도 `fetch` 제한 없이 동작하게 하기 위해서입니다. |
 | `data/geocode.json` | `[번호, 위도, 경도, 장소ID, 카테고리 인덱스, 전화, 정밀도]` 행 배열입니다. 정밀도는 `0` 건물, `1` 장소 검색, `2` 도로 단위 근사입니다. API 결과를 캐시해 두기 때문에 갱신 시 새 가맹점만 다시 요청합니다. |
@@ -147,7 +148,7 @@ sancheong-gift-map/
 
 - 가맹점 목록: 산청군 「2026년 모바일 산청사랑상품권 가맹점 등록 현황」(2026년 6월 기준)
 - 좌표, 장소 ID, 전화번호: 카카오 로컬 API (2026년 10월 조회)
-- 지도 타일: © OpenStreetMap contributors, © CARTO
+- 지도 타일: © OpenStreetMap contributors (OSM 표준 타일을 CSS로 흑백 처리)
 - 가맹점 등록 현황은 수시로 바뀝니다. **결제 가능 여부는 매장에서 확인**하시기 바랍니다.
 
 ## 라이선스
@@ -169,12 +170,13 @@ A static web page that puts all 1,730 merchants accepting the **Sancheong Sarang
 
 ### Features
 
-- **Map and list together**: dense areas collapse into numbered clusters; zooming in reveals pins colored by business type.
-- **Search and filters**: search by shop name, address or category, then narrow down with chips for the 11 townships (eup/myeon) and 11 business types. Chip counts update to match the current filters.
+- **Map and list together**: dense areas collapse into numbered clusters; zooming in reveals individual pins, and the selected shop is highlighted with a lime pin.
+- **Search and filters**: search by shop name, address or category, then narrow down with 11 business-type buttons and the **receipt card** on the map (merchant counts per township). Tapping a township line on the receipt shows only that area, and all counts update to match the current filters.
 - **Kakao Map links**: the 1,027 merchants that were matched to a Kakao place open the **Kakao Map place page** (hours, reviews, photos); the rest open Kakao Map at their coordinates. A directions button sits next to it.
 - **Sort by distance**: after allowing location access, the list is sorted nearest first and shows the distance.
-- **Only what is on screen**: as you pan the map, the list keeps only the merchants inside the current view.
-- **Phone layout**: on phones the list becomes a bottom sheet. Dark mode switches to dark map tiles.
+- **Only what is on screen**: turn on the switch and pan the map; the list keeps only the merchants inside the current view.
+- **Phone layout**: on phones the intro, search, map, business types and list stack vertically, and the receipt card starts collapsed.
+- **Link previews**: the browser tab and share previews (KakaoTalk and others) show the name "산청사랑상품권 사용처 지도" (Sancheong gift certificate merchant map) with a preview image.
 
 ### How it works
 
@@ -221,7 +223,7 @@ To check it locally, download the repository and open `index.html` in a browser.
 
 ### Usage examples
 
-- **"Somewhere for lunch in Wonji"**: pick `신안면` (Sinan-myeon) and `음식점` (restaurants), zoom into Wonji and turn on `지도에 보이는 곳만` (only what is on screen).
+- **"Somewhere for lunch in Wonji"**: pick `신안면` (Sinan-myeon) on the receipt card and `음식점` (restaurants), zoom into Wonji and turn on the `지도 화면 안만` (only what is on screen) switch.
 - **"Farms selling dried persimmons"**: type `곶감` in the search box. Farms in Sicheon-myeon and Samjang-myeon show up in the list and on the map.
 - **"Nearest gas station right now"**: tap the location button at the bottom right and pick `자동차·주유` (cars and fuel); the list is sorted nearest first.
 - **"Opening hours of a cafe near Donguibogam Village"**: search `동의보감`, then tap `카카오맵` on a cafe to see hours and reviews on its Kakao Map place page.
@@ -282,7 +284,7 @@ sancheong-gift-map/
 
 | File | Role |
 |---|---|
-| `index.html` | Holds the Leaflet map, clusters, search and filters, list and phone bottom sheet. Libraries load from CDNs so it can go to GitHub Pages as is, with no build tool. |
+| `index.html` | Holds the Leaflet map, clusters, search and filters, receipt card, list and phone layout. Map tiles are keyless OSM standard tiles turned greyscale with CSS to match the page (the CARTO tiles used at first started asking for an API key after deployment, so they were replaced). Libraries load from CDNs so it can go to GitHub Pages as is, with no build tool. |
 | `og-image.png` | Preview image shown when the link is shared in KakaoTalk, Slack and so on. Open Graph tags in the page `<head>` point to it along with the site name (산청사랑상품권 사용처). |
 | `data/merchants.js` | Puts the merchant array on `window.MERCHANTS`. It is a script rather than JSON so that `index.html` also works when opened straight from disk, without `fetch` restrictions. |
 | `data/geocode.json` | Rows of `[number, lat, lng, place ID, category index, phone, precision]`. Precision is `0` building, `1` place search, `2` approximate road level. Caching API results means updates only request new merchants. |
@@ -301,7 +303,7 @@ sancheong-gift-map/
 
 - Merchant list: Sancheong County, "2026 mobile Sancheong Sarang gift certificate merchant registrations" (as of June 2026)
 - Coordinates, place IDs and phone numbers: Kakao Local API (queried October 2026)
-- Map tiles: © OpenStreetMap contributors, © CARTO
+- Map tiles: © OpenStreetMap contributors (OSM standard tiles, turned greyscale with CSS)
 - Merchant registrations change often. **Check with the shop that it still accepts the certificate.**
 
 ### License

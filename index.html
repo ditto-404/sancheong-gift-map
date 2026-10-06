@@ -152,6 +152,7 @@ h1 .scribble svg { position: absolute; left: -12px; top: -9px; width: calc(100% 
 /* Map card */
 .map-card { position: relative; border-radius: var(--r-card); overflow: hidden; background: var(--card); min-height: 0; }
 #map { position: absolute; inset: 0; background: #f2f1ee; z-index: 0; }
+.leaflet-tile-pane { filter: grayscale(1) contrast(.88) brightness(1.07); }
 .hand-note { position: absolute; top: 18px; left: 22px; z-index: 450; font-family: var(--hand); font-size: 23px; line-height: 1; color: var(--ink-2); pointer-events: none; display: flex; align-items: flex-end; gap: 4px; }
 .hand-note svg { width: 34px; height: 30px; }
 .map-tools { position: absolute; top: 16px; right: 16px; z-index: 450; display: grid; gap: 6px; }
@@ -359,9 +360,10 @@ h1 .scribble svg { position: absolute; left: -12px; top: -9px; width: calc(100% 
 
   // ---------- Map ----------
   var map = L.map("map", { zoomControl: false, minZoom: 9, maxZoom: 19 }).setView([35.39, 127.88], 11);
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
-    subdomains: "abcd", maxZoom: 20,
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>'
+  // OpenStreetMap standard tiles, toned down to greyscale in CSS (.leaflet-tile-pane) to fit the page.
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'
   }).addTo(map);
   $("zin").onclick = function () { map.zoomIn(); };
   $("zout").onclick = function () { map.zoomOut(); };
