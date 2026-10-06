@@ -146,7 +146,7 @@ sancheong-gift-map/
 
 ## 데이터 출처와 주의
 
-- 가맹점 목록: 산청군 「2026년 모바일 산청사랑상품권 가맹점 등록 현황」(2026년 6월 기준)
+- 가맹점 목록: 산청군청 홈페이지 [「2026년 모바일 산청사랑상품권 가맹점 등록 현황」](https://www.sancheong.go.kr/www/selectBbsNttView.do?key=1466&bbsNo=126&nttNo=162687) (2026년 6월 기준, 원본 엑셀은 `data/source/`에 함께 보관)
 - 좌표, 장소 ID, 전화번호: 카카오 로컬 API (2026년 10월 조회)
 - 지도 타일: © OpenStreetMap contributors (OSM 표준 타일을 CSS로 흑백 처리)
 - 가맹점 등록 현황은 수시로 바뀝니다. **결제 가능 여부는 매장에서 확인**하시기 바랍니다.
@@ -301,7 +301,7 @@ sancheong-gift-map/
 
 ### Data sources and caveats
 
-- Merchant list: Sancheong County, "2026 mobile Sancheong Sarang gift certificate merchant registrations" (as of June 2026)
+- Merchant list: Sancheong County Office website, ["2026 mobile Sancheong Sarang gift certificate merchant registrations"](https://www.sancheong.go.kr/www/selectBbsNttView.do?key=1466&bbsNo=126&nttNo=162687) (as of June 2026; the original spreadsheet is kept in `data/source/`)
 - Coordinates, place IDs and phone numbers: Kakao Local API (queried October 2026)
 - Map tiles: © OpenStreetMap contributors (OSM standard tiles, turned greyscale with CSS)
 - Merchant registrations change often. **Check with the shop that it still accepts the certificate.**
